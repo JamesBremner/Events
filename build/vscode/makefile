@@ -1,7 +1,7 @@
 #source file search paths
 VPATH = ../../src 
 
-INCS = -I../../src 
+INCS = -I../../include 
 
 # folder for .o files
 ODIR=./obj
@@ -37,5 +37,8 @@ tcpclient: $(CLN)
 	-o ../../bin/tcpclient.exe $^ \
 	-lws2_32 -lwsock32
 
+.PHONY: clean
+clean:
+	del /q .\obj
 
 

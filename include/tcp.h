@@ -144,7 +144,7 @@ namespace raven
 
                 myAcceptHandler = f;
 
-                accept_async();
+                new std::thread(accept_block, this);
             }
 
             /// true if valid connection
@@ -211,29 +211,16 @@ namespace raven
         private:
             eType myType;
             std::string myPort;
-            SOCKET myAcceptSocket;  // soceket listening for clients
+            SOCKET myAcceptSocket;  // socket listening for clients
             SOCKET myConnectSocket; // socket connected to another tcp
-            std::future<void> myFutureAccept;
             std::thread *myThread;
             unsigned char myRecvbuf[1024];
             std::string myRemoteAddress;
             handler_t myReadHandler;
             handler_t myAcceptHandler;
 
-            void accept_async()
-            {
 
-                // start blocking accept in own thread
-                myFutureAccept = std::async(
-                    std::launch::async, // insist on starting immediatly
-                    &tcp::accept,
-                    this);
-
-                // start waiting for accept completion in own thread
-                myThread = new std::thread(accept_wait, this);
-            }
-
-            void accept()
+            void accept_block()
             {
                 std::cout << "listening for client on port " << myPort << "\n";
 
@@ -260,19 +247,10 @@ namespace raven
                 closesocket(myAcceptSocket);
 
                 std::cout << "client " << myRemoteAddress << " accepted\n";
-            }
-            void accept_wait()
-            {
-                // loop checking for client connection
-                const int check_interval_msecs = 500;
-                while (myFutureAccept.wait_for(
-                           std::chrono::milliseconds(check_interval_msecs)) == std::future_status::timeout)
-                {
-                }
-                // post accept haandler
+
+                // post accept handler
                 theEventQueue.Post( myAcceptHandler );
             }
-
             // blocking read
             void read_block()
             {

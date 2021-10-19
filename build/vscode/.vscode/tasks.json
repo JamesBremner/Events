@@ -7,14 +7,13 @@
             "label": "build",
             "options": {
                 "cwd": "${workspaceFolder}"
-               },
+            },
             "command": "mingw32-make.exe",
             "args": [
                 "-f",
                 "makefile",
                 "test"
             ],
-
             "problemMatcher": [
                 "$gcc"
             ],
@@ -27,14 +26,13 @@
             "label": "tcpserver",
             "options": {
                 "cwd": "${workspaceFolder}"
-               },
+            },
             "command": "mingw32-make.exe",
             "args": [
                 "-f",
                 "makefile",
                 "tcpserver"
             ],
-
             "problemMatcher": [
                 "$gcc"
             ],
@@ -47,14 +45,13 @@
             "label": "tcpclient",
             "options": {
                 "cwd": "${workspaceFolder}"
-               },
+            },
             "command": "mingw32-make.exe",
             "args": [
                 "-f",
                 "makefile",
                 "tcpclient"
             ],
-
             "problemMatcher": [
                 "$gcc"
             ],
@@ -64,17 +61,32 @@
             }
         },
         {
-			"label": "alltcp",
-			"dependsOrder": "sequence",
-			"dependsOn": [
-				"tcpserver",
-				"tcpclient",
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"problemMatcher": []
-		}
+            "label": "clean",
+            "command": "mingw32-make.exe",
+            "args": [
+                "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "alltcp",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "clean",
+                "tcpserver",
+                "tcpclient",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
     ]
 }
