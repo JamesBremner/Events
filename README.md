@@ -1,10 +1,13 @@
 # Events
-Standard C++11 asynchronous events
+Standard C++17 asynchronous ( non-blocking ) events
 
-The basic ideas follow boost::asio
+ - no libraries needed, everything is standard C++17 in header files.
 
- - no boost libraries needed, everything is standard C++11
+ - asynchronous wait for timer
+ - asynchronout wait for keyboard input
+ - asynchronous wait for tcp client to connect
+ - asynchronout wait for message from connected tcp client or server
 
- - simple class to run function on timer
-
- - No network i/o.  This should be built on top of this.
+`demo.cpp` example application with timers
+`tcpclient.cpp` example application with ketboard input and tcp client
+`tcpserver.cpp` example application with tcp server.
