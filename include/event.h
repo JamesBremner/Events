@@ -9,6 +9,14 @@ namespace raven
 {
 namespace event
 {
+        /** Event handler type
+
+    It is a std::function for a function returning void and taking no parameters.
+    All event handlers need to be like this.
+
+    */
+
+    typedef std::function< void() > handler_t;
 
 /** @brief A queue of delayed events
 
@@ -25,22 +33,13 @@ class cEventQueue
 {
 public:
 
-    /** Event handler type
-
-    It is a std::function for a function returning void and taking no parameters.
-    All event handlers need to be like this.
-
-    */
-
-    typedef std::function< void() > handler_t;
-
     /** Post an event handler to be run as soon as possible
 
     @param[in] f the event handler
 
     This can be called from any thread
     ( the queue is protected by a mutex )
-    but all the handler will be invoked on by one
+    but all the handlers will be invoked on by one
     from the same thread
     as called raven::event::theEventQueue.Run()
 
@@ -187,7 +186,7 @@ public:
     {
         WaitThenPost(
             msecs,
-            cEventQueue::handler_t( std::bind(&cTimer::handle_timer_event, this) ) );
+            handler_t( std::bind(&cTimer::handle_timer_event, this) ) );
     }
 
     /** Over-ride this with the code you want to execute
@@ -219,7 +218,7 @@ public:
 
     */
 
-    void WaitThenPost( int msecs, cEventQueue::handler_t f )
+    void WaitThenPost( int msecs, handler_t f )
     {
         // run blocking wait and post in a sleeping thread
 
@@ -244,7 +243,7 @@ public:
 private:
 
     /**  Blocking wait and post */
-    void BlockWaitThenPost( int msec, cEventQueue::handler_t f )
+    void BlockWaitThenPost( int msec, handler_t f )
     {
         // sleep for reuired delay
         std::this_thread::sleep_for (
@@ -287,6 +286,36 @@ public:
         theEventQueue.Stop();
     }
 };
+
+        class cin
+        {
+        public:
+
+            /** non-blocking wait for input from stdin ( keyboard )
+             * @param[in] f handler to call when input arrives on cin
+             */
+            void read(handler_t f)
+            {
+                myHandler = f;
+                new std::thread(read_block, this);
+            }
+
+            /// get data that was input
+            std::string line()
+            {
+                return myLine;
+            }
+
+        private:
+            handler_t myHandler;
+            std::string myLine;
+
+            void read_block()
+            {
+                std::cin >> myLine;
+                theEventQueue.Post(myHandler);
+            }
+        };
 
 }
 }
