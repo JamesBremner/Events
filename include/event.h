@@ -19,15 +19,6 @@ namespace event
     typedef std::function< void() > handler_t;
 
 /** @brief A queue of delayed events
-
-The basic ideas follow boost::asio
-
- - no boost libraries needed, everything is standard C++11
-
- - simple run function on timer
-
- - No nework i/o.  This should be built on top of this.
-
 */
 class cEventQueue
 {
